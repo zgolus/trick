@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  telegraf:
+    image: telegraf
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    ports:
+      - "8092:8092/udp"
+      - "8094:8094"
+      - "8125:8125/udp"
+      - "6514:6514"
+    restart: always
+
+  rsyslog:
+    image: rsyslog/syslog_appliance_alpine
+    ports:
+      - "514:514"
+    volumes:
+      - ./rsyslog.conf:/etc/rsyslog.conf:ro
+
+  influxdb:
+    image: influxdb
+    ports:
+      - "8086:8086"
+  
+  chronograf:
+    image: chronograf
+    environment:
+      INFLUXDB_URL: http://influxdb:8086
+    ports:
+      - "8888:8888"
